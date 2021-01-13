@@ -1,17 +1,18 @@
-FROM node:latest
-# build this image from the official image of node
+# Creating micro-services for nodejs front end
+FROM mongo as DB
+EXPOSE 27017
+COPY ./mongod.conf /etc/
 
-LABEL MAINTAINER=farah.mh98@hotmail.com
-# label is used as a refrence if you needed to know who built this image
+
+
+FROM node:alpine as app
 WORKDIR /usr/src/app
+COPY ./app/ . 
 
-COPY ./app/ .
-#copy all app files over
 
+
+# run the npm install and start app 
 RUN npm install
-
 EXPOSE 3000
-# app runs on port 3000, but we will do 80:3000 to avoid reverse proxy stuff 
 
 CMD ["node", "app.js"]
-# CMD will run this command once all other instructions have been successfully completed
