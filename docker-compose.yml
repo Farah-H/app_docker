@@ -1,16 +1,25 @@
 services:
-  app:
-    container_name: prod_app
-    restart: always
-    build: .
-    ports:
-      - "80:3000"
-    links:
-      - mongo
-  mongo:
-    container_name: mongo
-    image: mongo
-    volumes:
-      - ./data:/data/db
+  db:
+    build:
+      context: ./
+      target: db
     ports:
       - "27017:27017"
+    command: mongod
+
+  app:
+    build:
+      context: ./
+      target: app
+    links:
+      - db
+    depends_on:
+      - db
+    working_dir: /usr/src/app/
+    ports:
+      - "80:3000"
+    command: npm seeds/seed.js
+    command: npm start app.js
+    environment:
+      - DB_HOST=db:27017
+    restart: always
